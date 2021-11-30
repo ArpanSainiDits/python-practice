@@ -7,8 +7,8 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('student', StudentViewSet, basename='student')
-router.register('genericstudent', StudentGenericViewSet, basename= 'student')
-router.register('modelstudent', StudentModelViewSet, basename='student')
+router.register('genericstudent', StudentGenericViewSet, basename= 'genericstudent')
+router.register('modelstudent', StudentModelViewSet, basename='modelstudent')
 
 
 urlpatterns = [
