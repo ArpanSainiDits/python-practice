@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 
@@ -10,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k^h0uyr6&b*2_7kr0ef*(za*xkf&3e0alj^xry0=bh=qd_nqj%'
+SECRET_KEY = 'django-insecure-g-2r7p2rg$imx+uebdx=s3g$rf@t@hr)m8-%8wy(nfr@06s%du'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -27,10 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'file',
-    'rest_framework',
-    'django_cleanup.apps.CleanupConfig',
-    
+    'app',
 ]
 
 MIDDLEWARE = [
@@ -43,7 +39,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'fileupload.urls'
+ROOT_URLCONF = 'sendEmail.urls'
 
 TEMPLATES = [
     {
@@ -61,7 +57,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'fileupload.wsgi.application'
+WSGI_APPLICATION = 'sendEmail.wsgi.application'
 
 
 # Database
@@ -118,23 +114,27 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL  = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# SMTP Mail service with decouple
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = "smtp.gmail.com"
-# EMAIL_HOST_USER = 'arpansainiwins@gmail.com'
-# EMAIL_HOST_PASSWORD = 'Techie@1234'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST_USER = 'arpansainiwins@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_PASSWORD = 'Techie@1234'
 
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST_USER = 'arpansainiwins@gmail.com'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_USE_SSL = False
-# EMAIL_HOST_PASSWORD = 'Techie@1234'
+
+
+REST_FRAMEWORK = {
+ 
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+  
+        'rest_framework_simplejwt.authentication.JWTTokenUserAuthentication',
+    )
+
+}
+
+
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR,"media")

@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from file import views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('profileById/<int:id>/', views.profileView1.as_view()),
