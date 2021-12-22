@@ -45,3 +45,5 @@ class otpVerify(models.Model):
    
     User = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE)
+
+
