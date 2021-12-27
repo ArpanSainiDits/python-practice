@@ -22,13 +22,17 @@ class User(AbstractBaseUser, PermissionsMixin, models.Model):
     email = models.EmailField(unique=True)
 
     date_joined = models.DateTimeField(auto_now_add=True)
-    is_staff = models.BooleanField(('staff status'), default=False)
-    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField( default=True)
+    is_active = models.BooleanField('active',default=False)
+    is_superuser = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
     created_date = models.DateTimeField(default=timezone.now)
     modified_date = models.DateTimeField(default=timezone.now)
     created_by = models.EmailField()
     modified_by = models.EmailField()
+    # otp = models.IntegerField(max_length=10, null=True, blank=True)
+    # Rotp = models.IntegerField(max_length=10, null=True, blank=True)
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -42,8 +46,15 @@ class User(AbstractBaseUser, PermissionsMixin, models.Model):
 class otpVerify(models.Model):
 
     otp = models.IntegerField()
+    email = models.EmailField()
    
     User = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE)
 
 
+
+class otpstored(models.Model):
+    registerotp = models.IntegerField(blank=True, null=True)
+    forgototp = models.IntegerField(blank=True, null=True)
+    
+    User = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)

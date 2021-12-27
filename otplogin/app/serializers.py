@@ -1,5 +1,8 @@
+from django.contrib.auth import models
+from django.core import mail
+from rest_framework import fields
 from rest_framework.fields import SerializerMethodField
-from .models import User, otpVerify
+from .models import User, otpVerify, otpstored
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
@@ -28,6 +31,10 @@ class otpVerifySerializer(serializers.ModelSerializer):
         model = otpVerify
         fields = "__all__"
 
+# class otpstoredSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = otpstored
+#         fields = "__all__"
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -68,39 +75,12 @@ class UserLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid login credentials")
 
 
-# class ChangePasswordSerializer(serializers.Serializer):
-#     email = serializers.EmailField(write_only=True, required=True)
-#     password = serializers.CharField(
-#         write_only=True, required=True, validators=[validate_password])
-#     confirm_password = serializers.CharField()
 
-#     class Meta:
-#         model = User
-#         fields = ('email', 'password')
-
-#     def validate(self, attrs):
-#         if attrs['password'] != attrs['confirm_password']:
-#             raise serializers.ValidationError(
-#                 {"password": "Password fields didn't match."})
-#         print("++++++++++++++++++++++++++", attrs)
-#         return attrs
-
-#     def create(self, validated_data):
-
-#         print("------------------------==========================")
-#         return User.objects.create(**validated_data)
-        
-    
-
-#     def update(self, instance, validated_data):
-#         instance.email = validated_data.get('email', instance.email)
-#         instance.password = validated_data.get('password', instance.password)
-#         instance.save()
-#         return instance
 
 class resetpasswordSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=100)
     password = serializers.CharField(max_length=100)
+    # otp = serializers.CharField(max_length=10, null=True, blank=True)
 
     class Meta:
         model = User
