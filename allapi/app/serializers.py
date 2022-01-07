@@ -1,11 +1,14 @@
 from django.contrib.auth import models
 from rest_framework import serializers
-from .models import User, otpVerify
+from .models import User, otpVerify, task
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import update_last_login
 from rest_framework import fields
 from django.contrib.auth.password_validation import validate_password
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.fields import SerializerMethodField
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -49,11 +52,17 @@ class UserLoginSerializer(serializers.Serializer):
         pass
 
     def validate(self, data):
-        email = data['email']
-        password = data['password']
-        user = authenticate(email=email, password=password)
-        if user is None:
+        email = data.get('email')
+        password = data.get('password')
+        print('------', email)
+        print('------', password)
+        try:
+            user = User.objects.get(email=email)
+            user = user.check_password(password)
+        except User.DoesNotExist:
             raise serializers.ValidationError("Invalid login credentialssssss")
+
+        # user = authenticate(email=email, password=password)
 
         try:
             refresh = RefreshToken.for_user(user)
@@ -77,7 +86,6 @@ class UserLoginSerializer(serializers.Serializer):
 class forgetpasswordSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=100)
     password = serializers.CharField(max_length=100)
-    # otp = serializers.CharField(max_length=10, null=True, blank=True)
 
     class Meta:
         model = User
@@ -86,14 +94,40 @@ class forgetpasswordSerializer(serializers.Serializer):
     def save(self):
         email = self.validated_data['email']
         password = self.validated_data['password']
-        # filtering out whethere username is existing or not, if your username is existing then if condition will allow your username
+
         if User.objects.filter(email=email).exists():
-            # if your username is existing get the query of your specific username
+
             user = User.objects.get(email=email)
-            # then set the new password for your username
+
             user.set_password(password)
             user.save()
             return user
         else:
             raise serializers.ValidationError(
                 {'error': 'please enter valid crendentials'})
+
+
+class changePasswordSerializer(serializers.Serializer):
+    email = serializers.CharField(max_length=100)
+    old_password = serializers.CharField(max_length=100)
+    new_password = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'old_password',
+            'new_password'
+        )
+
+
+class taskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = task
+        fields = (
+            'title',
+            'discription',
+            'due_date',
+            'status',
+
+        )

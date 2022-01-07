@@ -1,3 +1,5 @@
+from cryptography.fernet import Fernet
+from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 import random
@@ -6,7 +8,7 @@ from rest_framework.response import Response
 from django.shortcuts import render
 from rest_framework import serializers
 from rest_framework.views import APIView
-from.serializers import UserRegistrationSerializer, otpVerifySerializer, UserLoginSerializer, forgetpasswordSerializer
+from.serializers import UserRegistrationSerializer, otpVerifySerializer, UserLoginSerializer, forgetpasswordSerializer, changePasswordSerializer, taskSerializer
 from.models import otpVerify, User
 # Create your views here.
 
@@ -85,7 +87,7 @@ class UserLoginView(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        valid = serializer.is_valid(raise_exception=True)
+        valid = serializer.is_valid()
 
         if valid:
             status_code = status.HTTP_200_OK
@@ -96,13 +98,15 @@ class UserLoginView(APIView):
                 'message': 'User logged in successfully',
                 'access': serializer.data['access'],
                 'refresh': serializer.data['refresh'],
-                # 'authenticatedUser': {
-                #     'email': serializer.data['email'],
+                'authenticatedUser': {
+                    'email': serializer.data['email'],
 
-                # }
+                }
             }
 
             return Response(response, status=status_code)
+        else:
+            return Response({"message": serializer.errors})
 
 
 class forgetPasswordView(APIView):
@@ -176,3 +180,51 @@ class otpVerifyView2(APIView):
                     'user': serializer.data
                 }
                 return Response(response)
+
+
+class changePasswordView(APIView):
+    def post(self, request):
+
+        serializer = changePasswordSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+
+            # mname = serializer.save()
+            if User.objects.filter(email=serializer.data['email']).exists():
+
+                obj = User.objects.get(email=serializer.data['email'])
+
+                print(
+                    "------> email = ", serializer.data['email'], "old_password", serializer.data['old_password'], "new_password", serializer.data['new_password'])
+
+                print("--------> old password in table", obj.password)
+
+                key = Fernet.generate_key()
+                fernet = Fernet(key)
+
+                encPassword = fernet.encrypt(
+                    serializer.data['old_password'].encode())
+                print("--------------->", encPassword)
+
+                pas = serializer.data['old_password']
+
+                if obj.password == pas(User.password):
+                    obj.password = serializer.data['new_password']
+                    obj.save()
+
+                    return Response("Password changer successfully.")
+                return Response("old password and new password did not match.")
+            return Response("Email does not exits")
+        return Response('failed retry after some time')
+
+
+class taskView(APIView):
+
+    def post(self, request):
+
+        serializer = taskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

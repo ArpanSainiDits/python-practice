@@ -66,15 +66,6 @@ WSGI_APPLICATION = 'allapi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
-
-DATABASES = {
-    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'allapi',
         'USER': 'root',
@@ -139,12 +130,11 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_PASSWORD = 'Techie@1234'
 
 
-REST_FRAMEWORK = {
+# REST_FRAMEWORK = {
 
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
 
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     )
 
-}
-
+# }

@@ -48,3 +48,14 @@ class otpVerify(models.Model):
     
     User = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE)
+
+
+class task(models.Model):
+    title = models.CharField(max_length=50)
+    discription = models.CharField(max_length=200)
+    due_date = models.DateField()
+    status = models.CharField(max_length=50)
+    created_date = models.DateTimeField(default=timezone.now)
+    modified_date = models.DateTimeField(default=timezone.now)
+    User = models.ForeignKey(
+        User, blank=True, null=True, on_delete=models.CASCADE)
