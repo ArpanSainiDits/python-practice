@@ -1,5 +1,7 @@
+from django.http import HttpResponse, JsonResponse
 from cryptography.fernet import Fernet
 from rest_framework import generics
+from rest_framework import response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 import random
@@ -8,8 +10,8 @@ from rest_framework.response import Response
 from django.shortcuts import render
 from rest_framework import serializers
 from rest_framework.views import APIView
-from.serializers import UserRegistrationSerializer, otpVerifySerializer, UserLoginSerializer, forgetpasswordSerializer, changePasswordSerializer, taskSerializer
-from.models import otpVerify, User
+from.serializers import UserRegistrationSerializer, otpVerifySerializer, UserLoginSerializer, forgetpasswordSerializer, changePasswordSerializer, taskSerializer, UserProfileSerializer
+from.models import otpVerify, User, task
 # Create your views here.
 
 
@@ -228,3 +230,53 @@ class taskView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        tasks = task.objects.all()
+        serializer = taskSerializer(tasks, many=True)
+        return Response(serializer.data)
+    
+         
+class taskViewById(APIView):
+    def get_object(self, id):
+        try:
+            return task.objects.get(id=id)
+        except task.DoesNotExist:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, id):
+        tasks = self.get_object(id)
+        serializer = taskSerializer(tasks)
+        return Response(serializer.data)
+
+    def put(self, request, id):
+        tasks = self.get_object(id)
+        serializer = taskSerializer(tasks, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        student = self.get_object(id)
+        student.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class userProfileView(APIView):
+    def get_object(self, id):
+        try:
+            return User.objects.get(id=id)
+        except User.DoesNotExist:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    
+    def put(self, request, id):
+        tasks = self.get_object(id)
+        serializer = UserProfileSerializer(tasks, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+   

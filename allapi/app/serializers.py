@@ -75,7 +75,7 @@ class UserLoginSerializer(serializers.Serializer):
                 'access': access_token,
                 'refresh': refresh_token,
                 'email': user.email,
-
+                
             }
 
             return validation
@@ -131,3 +131,19 @@ class taskSerializer(serializers.ModelSerializer):
             'status',
 
         )
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'first_name',
+            'last_name',
+            'email',
+            'mobile',
+
+        )
+
+    def create(self, validated_data):
+        auth_user = User.objects.create_user(**validated_data)
+        return auth_user
